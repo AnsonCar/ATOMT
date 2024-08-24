@@ -1,0 +1,18 @@
+#sideBar {
+    z-index: 3;
+    width: 256px;
+    display:none
+}
+
+dialog{
+    border: none;
+  }
+
+html {
+    overflow: -moz-hidden-unscrollable;
+    height: 100%;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}

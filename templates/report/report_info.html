@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Frame Theme icon -->
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3-theme-deep-purple.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/basicStyle.css')}}">
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_Frame.js')}}"></script>
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_input.js')}}"></script>
+    <!-- fucntion -->
+    <script src="{{url_for('static',filename='/js/sideBarFunc.js')}}"></script>
+    <title></title>
+</head>
+
+<body class="w3-light-grey">
+    <atomt-frame title="Report Info - {{datas.Name}}" hover="w3-hover-deep-purple"></atomt-frame>
+
+    <div class="main">
+        <div style="overflow-y:auto;">
+            <form method="POST" action="" id="json-form" enctype="multipart/form-data">
+                <div class="BigBox">
+                    {% for key, val in datas.items() %}
+                    {% if key != "Name" %}
+                    {% if key != "image" %}
+                    <!-- 動態生成表單內容 -->
+                    <div class="w3-container w3-padding w3-white w3-margin-top" id="box">
+                        <!-- 標題 -->
+                        <p class="w3-xlarge" style="margin:0;" onclick="accOpen('{{key}}_')">
+                            {{key}} - {{val[0][1]}}
+                            <i class="fa fa-caret-down w3-right"></i>
+                        </p>
+                        <!-- 內容 -->
+                        <div class="w3-hide w3-show w3-margin-top" id="{{key}}_">
+                            <div class="w3-row" id="{{key}}">
+                                {% for box in val %}
+                                <atomt-input type="{{box[0]}}" value="{{box[1]}}" id="{{key}}_{{box[2]}}"
+                                    class="atomt-input"></atomt-input>
+                                {% endfor %}
+                            </div>
+                            <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                                onclick="addInput('{{key}}', 'title')">+ title</button>
+                            <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                                onclick="addInput('{{key}}', 'second_title')">+ scond title</button>
+                            <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                                onclick="addInput('{{key}}', 'content')">+ content</button>
+                            <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                                onclick="addInput('{{key}}', 'image')">+ image</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- 提交表單 -->
+                <div class="w3-margin">
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" id="Submit"
+                        type="submit">Submit</button>
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple " type="button"
+                        onclick="addBox()">+ box</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        function addBox() {
+            const BigBox = document.querySelector(".BigBox")
+            const id = BigBox.querySelectorAll("#box").length + 1
+
+            const box = document.createElement("div");
+            box.setAttribute("class", "w3-container w3-padding w3-white w3-margin-top")
+            box.setAttribute("id", "box")
+            box.innerHTML = `
+                <!-- 標題 -->
+                <p class="w3-xlarge" style="margin:0;" onclick="accOpen('box${id}_')">
+                    box${id} -
+                    <i class="fa fa-caret-down w3-right"></i>
+                </p>
+                <!-- 內容 -->
+                <div class="w3-hide w3-show w3-margin-top" id="box${id}_">
+                    <div class="w3-row" id="box${id}">
+                        <atomt-input type="chapter" value="" id="box${id}_0" class="atomt-input">
+                        </atomt-input>
+                    </div>
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                        onclick="addInput('box${id}', 'title')">+ title</button>
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                        onclick="addInput('box${id}', 'second_title')">+ second title</button>
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                        onclick="addInput('box${id}', 'content')">+ content</button>
+                    <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" type="button"
+                        onclick="addInput('box${id}', 'image')">+ image</button>
+                </div>
+            `
+            BigBox.appendChild(box)
+        }
+
+        function addInput(tobox, toinput) {
+            const thebox = document.querySelector(`#${tobox}`)
+            const num = thebox.querySelectorAll("atomt-input").length
+            const input = document.createElement("atomt-input");
+            input.setAttribute("type", toinput);
+            input.setAttribute("value", "")
+            input.setAttribute("id", `${tobox}_${num}`);
+            thebox.appendChild(input);
+        }
+
+        function moveInput(id) {
+            document.querySelector(`#${id}`).remove();
+        }
+
+        function tojson2() {
+            let json = `{"Name":"{{datas.Name}}",`
+            const boxs = document.querySelectorAll("#box")
+            for (let x = 0; x < boxs.length; x++) {
+                let box = "box" + (x + 1)
+                json += `"${box}": [ `
+                const inputs = boxs[x].querySelectorAll("atomt-input");
+                let num = 0
+                inputs.forEach(input => {
+                    console.log(input.id)
+                    input.id = `${box}_${num++}`
+                    console.log(input.id)
+                    const type = input.getAttribute("type")
+                    const value = input.getAttribute("value")
+                    const id = input.getAttribute("id")
+                    json += `[ "${type}", "${value}", ${num} ]`
+                    if (num < inputs.length) {
+                        json += `,`
+                    }
+                });
+                if (x !== boxs.length - 1) {
+                    json += "],"
+                } else {
+                    json += "]"
+                }
+            }
+
+
+            json += "}"
+            console.log(json)
+            return json
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('json-form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                let data = tojson2()
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/atomt/report_json/{{reportId}}');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                    }
+                };
+                xhr.send(JSON.stringify(data));
+
+                // let link = document.createElement('a');
+                // // 設置 href 屬性
+                // link.setAttribute('href', '/atomt/report');
+
+                // // 模擬點擊超鏈接
+                // link.click();
+            });
+        });
+    </script>
+</body>
+
+</html>

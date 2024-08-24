@@ -1,0 +1,562 @@
+{
+    "Name": "PBL",
+    "box1": [
+        [
+            "chapter",
+            "Introduction",
+            1
+        ],
+        [
+            "title",
+            "Background",
+            2
+        ],
+        [
+            "content",
+            "As one of the leading vocational and professional education and training (VPET) provider in Hong Kong, the Vocational Training Council (VTC) will conduct regular manpower surveys and publish reports for 24 major industry sectors to assess their manpower demands and supplies. It is a quantitative survey conducted once every 4 years to collect information of employees count, income, education, and so on. In this 4-year cycle two manpower updates will be conducted through focus group meeting with industry representatives and data analytics of major recruitment platforms like CPJobs and CTgoodjob. The information obtained from the manpower survey aims to facilitating the Government and different stakeholders of industries for formulation of manpower and training plan.  there are 4 million unstructured job advertisements with monthly growth of 100k to 150k need to retrieve, clean and classify. but Data Science Technology could improve the efficiency and accuracy of job advertisements classification.",
+            3
+        ],
+        [
+            "title",
+            "Project Objectives",
+            4
+        ],
+        [
+            "content",
+            "The objective is to enhance the efficiency of the operation efficiency of the Manpower Survey conducted by the HQIP of VTC, including enhancing the data collection, cleaning, modeling and classification job advertisements.",
+            5
+        ],
+        [
+            "title",
+            "Business Requirements",
+            6
+        ],
+        [
+            "content",
+            "We have to propose suitable machine learning algorithms with supporting reasons for the task. Then, we develop a system that can classify the job advertisements into a PJT in an industry. The classifier performance should be better than the previous rule-based classification solution through our model.",
+            7
+        ],
+        [
+            "title",
+            "Factors Identified and Reasons",
+            8
+        ],
+        [
+            "second_title",
+            "1. Title",
+            9
+        ],
+        [
+            "content",
+            "Job Title means a specific designation of a position within an organization, normally associated with a job description that details the tasks and responsibilities that go with it. The model may direct judges a PJT in an industry quickly through the job title.",
+            10
+        ],
+        [
+            "second_title",
+            "2. job_employment_type",
+            11
+        ],
+        [
+            "content",
+            "Employment type refers to the different kinds of employees that an organization might hire or contract for employment. There are several varieties of employees, including full-time, part-time. According to the employment type, the model can classify part-time of the job ads into a PJT (411) fastly.",
+            12
+        ],
+        [
+            "title",
+            "Prediction Model Chosen (Decision Tree & Random Forest)",
+            13
+        ],
+        [
+            "content",
+            "Decision Tree is a graphical diagram for classification. Each branch of the decision tree presents a potential outcome where the furthest branches on the tree concludes the final answer.  Random forest is a commonly-used machine learning algorithm, which combines the output of multiple decision trees to reach a single result. Its ease of use and flexibility have fueled its adoption, as it handles both classification and regression problems.  Our tree objective is judging the job advertisements into a PJT in an industry. Decision tree provides the target users an easy way to visualize the possible results as analysis of the training plans. But Decision Tree focuses on optimizing for the node split at hand, rather than taking into account how that split impacts the entire tree. though Decision Trees is simple and flexible, but makes it prone overfitting  To address overfitting, and reduce the variance in Decision Trees, we are using random forests to training multiple trees.   Random Forests work well with both categorical and numerical data. No scaling or transformation of variables is usually necessary. Also, it is not influenced by outliers to a fair degree. It does this by binning the variables. However, Random Forests can be computationally intensive for large datasets.",
+            14
+        ]
+    ],
+    "box2": [
+        [
+            "chapter",
+            "Data Preparation",
+            1
+        ],
+        [
+            "title",
+            "(a) Sources of Data",
+            2
+        ],
+        [
+            "content",
+            "the listed of job advertisements data is given by HQIP of VTC.",
+            3
+        ],
+        [
+            "image",
+            "photo1",
+            4
+        ],
+        [
+            "title",
+            "(b) Data preparation",
+            5
+        ],
+        [
+            "content",
+            "We used Microsoft Excel and mainly R to deal with various problems of the raw data that we retrieved. Definition of data issues:",
+            6
+        ],
+        [
+            "image",
+            "photo2",
+            7
+        ],
+        [
+            "image",
+            "photo3",
+            8
+        ],
+        [
+            "content",
+            "As shown in illustration, there are some data issues like multiple date formats, inconsistent abbreviations, unknown title, missing data.",
+            9
+        ],
+        [
+            "title",
+            "Cleansing the data ",
+            10
+        ],
+        [
+            "content",
+            "Processing method: There are some garbled in the text of job title, all of them in the raw data were deleted though R.",
+            11
+        ],
+        [
+            "content",
+            "processed in R for deleting garbled, as shown below:",
+            12
+        ],
+        [
+            "image",
+            "photo4",
+            13
+        ],
+        [
+            "content",
+            "as seen above, there is using grep() to check the garbled title \u201c\ufffd\u201d,then subtract the garbled title \u201c\ufffd\u201d",
+            14
+        ],
+        [
+            "content",
+            "outcome of deleting garbled, as shown below",
+            15
+        ],
+        [
+            "image",
+            "photo5",
+            16
+        ],
+        [
+            "title",
+            "Redundant or useless data",
+            17
+        ],
+        [
+            "content",
+            "Processing method: we found that some factor is useless such as job_salary, experience, sector_title \u2026.for optimization of the prediction model while we were doing the project.  Therefore, we used R to manually remove those unused data.",
+            18
+        ],
+        [
+            "content",
+            "processed in R for deleting useless data, as shown below:",
+            19
+        ],
+        [
+            "image",
+            "photo6",
+            20
+        ],
+        [
+            "content",
+            "We are chosen useful factor assign to need.",
+            21
+        ],
+        [
+            "content",
+            "outcome of deleting useless data, as shown below:",
+            22
+        ],
+        [
+            "image",
+            "photo8",
+            23
+        ],
+        [
+            "title",
+            "Missing entries",
+            24
+        ],
+        [
+            "content",
+            "Processing method: Given that quantity of original data is large, in order to improve accuracy of the model, all of the missing entries in the raw data were represented by 000 through R.",
+            25
+        ],
+        [
+            "content",
+            "processed in R for replace N/A by NaN,as shown below:",
+            26
+        ],
+        [
+            "image",
+            "photo9",
+            27
+        ],
+        [
+            "content",
+            "outcome of replace N/A by 000, as shown below:",
+            28
+        ],
+        [
+            "image",
+            "photo10",
+            29
+        ],
+        [
+            "title",
+            "Disqualified data",
+            30
+        ],
+        [
+            "content",
+            "Processing method: we found that Job_code is not formatted to 3 digit. Therefore, we used R to format from 0 to 000.",
+            31
+        ],
+        [
+            "content",
+            "processed in R for formatting data, as shown below:",
+            32
+        ],
+        [
+            "image",
+            "photo11",
+            33
+        ],
+        [
+            "content",
+            "outcome of formatting data, as shown below:",
+            34
+        ],
+        [
+            "image",
+            "photo12",
+            35
+        ],
+        [
+            "title",
+            "(c) Sample Listing of final dataset",
+            36
+        ],
+        [
+            "content",
+            "The following are the screen captures of part of the final dataset. You may refer to the R script that we have submitted for the full listing of final dataset.",
+            37
+        ],
+        [
+            "image",
+            "photo13",
+            38
+        ],
+        [
+            "image",
+            "photo14",
+            39
+        ],
+        [
+            "image",
+            "photo15",
+            40
+        ]
+    ],
+    "box3": [
+        [
+            "chapter",
+            "Data Exploration",
+            1
+        ],
+        [
+            "title",
+            "Summary Statistics for the Dataset",
+            2
+        ],
+        [
+            "content",
+            "The following is a summary generated by an R function which shows the summary statistics of the training dataset.",
+            3
+        ],
+        [
+            "image",
+            "photo16",
+            4
+        ],
+        [
+            "content",
+            "The following is a summary generated by an R function which shows the summary statistics of the testing dataset.",
+            5
+        ],
+        [
+            "image",
+            "photo17",
+            6
+        ]
+    ],
+    "box4": [
+        [
+            "chapter",
+            "Data Modeling",
+            1
+        ],
+        [
+            "title",
+            "Training and testing dataset",
+            2
+        ],
+        [
+            "content",
+            "We are splitting ratio for training and testing dataset is 70:30. The R script of splitting dataset as seen below:",
+            3
+        ],
+        [
+            "image",
+            "photo19",
+            4
+        ],
+        [
+            "title",
+            "Data Modeling",
+            5
+        ],
+        [
+            "second_title",
+            "(1st Model)",
+            6
+        ],
+        [
+            "content",
+            "The following is a screen capture which shows algorithm of tree classification by an R function.",
+            7
+        ],
+        [
+            "content",
+            "outcome of algorithm, as shown below:",
+            8
+        ],
+        [
+            "image",
+            "photo20",
+            9
+        ],
+        [
+            "content",
+            "The following is a screen capture which shows code of plot tree with rpart.plot().",
+            10
+        ],
+        [
+            "image",
+            "photo21",
+            11
+        ],
+        [
+            "content",
+            "outcome of Decision Tree, as shown below:",
+            12
+        ],
+        [
+            "image",
+            "photo22",
+            13
+        ],
+        [
+            "image",
+            "photo23",
+            14
+        ],
+        [
+            "second_title",
+            "(2nd Model)",
+            15
+        ],
+        [
+            "content",
+            "The following is a screen capture which shows algorithm of tree classification by an R function",
+            16
+        ],
+        [
+            "image",
+            "photo24",
+            17
+        ],
+        [
+            "content",
+            "outcome of algorithm, as shown below:",
+            18
+        ],
+        [
+            "image",
+            "photo25",
+            19
+        ],
+        [
+            "content",
+            "The following is a screen capture which shows code of plot tree with rpart.plot().",
+            20
+        ],
+        [
+            "image",
+            "photo26",
+            21
+        ],
+        [
+            "content",
+            "outcome of Decision Tree, as shown below",
+            22
+        ],
+        [
+            "image",
+            "photo27",
+            23
+        ],
+        [
+            "image",
+            "photo28",
+            24
+        ]
+    ],
+    "box5": [
+        [
+            "chapter",
+            "Evaluation and Interpretation",
+            1
+        ],
+        [
+            "title",
+            "Confusion Matrices for Models",
+            2
+        ],
+        [
+            "content",
+            "Processing method of Confusion matrix, as shown below:",
+            3
+        ],
+        [
+            "image",
+            "photo29",
+            4
+        ],
+        [
+            "content",
+            "The following shows the confusion matrix and its statistics, which is generated by an R function.",
+            5
+        ],
+        [
+            "image",
+            "photo30",
+            6
+        ],
+        [
+            "title",
+            "Performance Evaluation",
+            7
+        ],
+        [
+            "content",
+            "This is 1st Model evaluation, as shown below:",
+            8
+        ],
+        [
+            "image",
+            "photo31",
+            9
+        ],
+        [
+            "content",
+            "This is 2nd Model evaluation, as shown below:",
+            10
+        ],
+        [
+            "image",
+            "photo32",
+            11
+        ],
+        [
+            "title",
+            "Discussion of Results",
+            12
+        ],
+        [
+            "content",
+            "The confusion matrix we may obtain with the test model is shown above for this dataset. This gives us a lot more information than just the accuracy of the model. Regarding the prediction model, the accuracy of 1st model is 0.3639 and the accuracy of 2nd model is 0.4422. we contrast two models and found that although two models which is quite low and means that the prediction model cannot perform well on Classification the Job Advertisement, 2nd model overall is better than 1st model. ",
+            13
+        ]
+    ],
+    "box6": [
+        [
+            "chapter",
+            "Roadmap for S1-S3 Development and Deployment",
+            1
+        ],
+        [
+            "image",
+            "photo33",
+            2
+        ],
+        [
+            "image",
+            "photo34",
+            3
+        ],
+        [
+            "image",
+            "photo35",
+            4
+        ]
+    ],
+    "box7": [
+        [
+            "chapter",
+            "R Script Usage",
+            1
+        ],
+        [
+            "image",
+            "photo36",
+            2
+        ],
+        [
+            "image",
+            "photo37",
+            3
+        ],
+        [
+            "image",
+            "photo38",
+            4
+        ],
+        [
+            "image",
+            "photo39",
+            5
+        ],
+        [
+            "image",
+            "photo40",
+            6
+        ],
+        [
+            "image",
+            "photo41",
+            7
+        ],
+        [
+            "image",
+            "photo42",
+            8
+        ]
+    ]
+}

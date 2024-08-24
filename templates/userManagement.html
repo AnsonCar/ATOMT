@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Frame Theme icon -->
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3-theme-deep-purple.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/basicStyle.css')}}">
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_Frame.js')}}"></script>
+    <!-- fucntion -->
+    <script src="{{url_for('static',filename='/js/sideBarFunc.js')}}"></script>
+    <script src="{{url_for('static',filename='/js/filterFunc.js')}}"></script>
+    <title></title>
+</head>
+
+<body class="w3-light-grey">
+    <atomt-frame title="User Management" hover="w3-hover-deep-purple"></atomt-frame>
+
+    <div class="main">
+        <div style="overflow-y:auto;">
+            <!-- 列出 用戶 -->
+            <div class="w3-container w3-padding w3-white">
+                <p class="w3-xlarge" style="margin:0;" onclick="accOpen('UserList')">
+                    User List
+                    <i class="fa fa-caret-down w3-right"></i>
+                </p>
+                <div class="w3-hide w3-margin-top w3-show " id="UserList">
+                    <input class="w3-input w3-border w3-padding w3-round " type="text" placeholder="Search for names.."
+                        id="myInput" onkeyup="filterFunc()">
+                    <div style="overflow-x:auto;">
+                        <table class="w3-table-all w3-round w3-margin-top" id="myTable">
+                            <tr>
+                                <th id="userId">id</th>
+                                <th id="userName">Name</th>
+                                <th></th>
+                                <th id="userEmail">email</th>
+                                <th id="edit">edit</th>
+                            </tr>
+                            {% for user in users%}
+                            <tr id="user{{ user.id }}">
+                                <th>{{ user.id }}</th>
+                                <td id="{{ user.username }}">
+                                    {{ user.username }}
+                                </td>
+                                <td>
+                                    {% if user.username != "AnsonCar" %}
+                                    {% if user.username != "AnsonCarWork" %}
+                                    <button
+                                        class="w3-circle w3-ripple w3-small w3-border w3-margin-left w3-hover-deep-purple"
+                                        onclick="edit_openDialog('user{{ user.id }}', '{{ user.id }}')">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.username == username or user.username == "AnsonCar" or user.username ==
+                                    "AnsonCarWork" %}
+                                    <button class="w3-circle w3-ripple w3-small w3-border w3-border-blue w3-text-blue">
+                                        P
+                                    </button>
+                                    {% else %}
+                                    <a href="/atomt/deluser/{{user.username}}">
+                                        <button
+                                            class="w3-circle w3-ripple w3-small w3-border w3-border-red w3-text-red">
+                                            X
+                                        </button>
+                                    </a>
+                                    {% endif%}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- 增加用戶 -->
+            <div class="w3-container w3-padding w3-white w3-margin-top">
+                <form method="POST" action="/atomt/user">
+                    <input type="hidden" name="way" value="add">
+                    <p class="w3-xlarge" style="margin:0;" onclick="accOpen('AddUser')">
+                        Add User
+                        <i class="fa fa-caret-down w3-right"></i>
+                    </p>
+                    <div class="w3-hide w3-show w3-margin-top" id="AddUser">
+                        <p>
+                            <label>Username:</label>
+                            <input class="w3-input w3-border w3-round" type="text" id="add_username" name="username"
+                                required>
+                        </p>
+                        <p>
+                            <label>Password: (包含小大寫字母數字，長度大於8)</label>
+                            <input class="w3-input w3-border w3-round" type="password" id="password" name="pass_word"
+                                required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30}$" autocomplete="new-password">
+                        </p>
+                        <p>
+                            <label>Email:</label>
+                            <input class="w3-input w3-border w3-round" type="email" id="email" name="useremail" required
+                                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                        </p>
+                        <p>
+                            <button class="w3-button w3-round w3-theme-l1 w3-hover-deep-purple" id="Submit"
+                                type="submit" disabled>Submit</button>
+                            <button class="w3-button w3-gray w3-round w3-text-white" type="reset">reset</button>
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Edit -->
+            <dialog id="edit_userDialog" class="w3-container w3-card w3-round-large" close>
+                <form action="/atomt/user" method="post">
+                    <input type="hidden" name="way" value="edit">
+                    <input type="hidden" name="userid" id="edit_user_id">
+                    <h2>
+                        Modify information
+                        <span class="w3-bar-item w3-margin-left w3-container w3-right w3-round w3-hover-deep-purple"
+                            onclick="edit_closeDialog()">x</span>
+                    </h2>
+                    <p class="w3-margin-top"></p>
+                    <h4>
+                        <label>user: </label>
+                        <input class="w3-input" type="text" name="username" id="edit_username">
+                    </h4>
+
+                    <h4>
+                        <label>email: </label>
+                        <input class="w3-input" type="text" name="useremail" id="edit_useremail">
+                    </h4>
+
+                    <h4>
+                        <input
+                            class="w3-button w3-medium w3-block w3-round w3-margin-top w3-theme-d1 w3-hover-deep-purple"
+                            type="submit" value="Done" id="edit_submitBtn" disabled>
+                    </h4>
+                </form>
+            </dialog>
+
+            <script>
+                edit_userDialog = document.querySelector("#edit_userDialog");
+                add_userDialog = document.querySelector("#add_userDialog");
+
+                function edit_closeDialog() {
+                    edit_userDialog.close()
+                }
+
+                function edit_openDialog(id, user_id) {
+                    tr = document.querySelector(`#${id}`)
+                    user_name = tr.getElementsByTagName("td")[0];
+                    console.log(user_name.innerText.trim())
+                    user_email = tr.getElementsByTagName("td")[2];
+                    console.log(user_email)
+                    document.querySelector("#edit_user_id").value = user_id
+                    document.querySelector("#edit_username").value = user_name.innerText.trim()
+                    document.querySelector("#edit_useremail").value = user_email.textContent
+
+                    edit_userDialog.showModal()
+                }
+            </script>
+
+            <script>
+                const add_username = document.getElementById('add_username');
+                const add_submitBtn = document.getElementById('Submit');
+                add_username.addEventListener('input', (event) => {
+                    const filter = (document.querySelector("#add_username").value).toUpperCase();
+                    console.log(filter)
+                    const table = document.getElementById('myTable');
+                    const tr = table.getElementsByTagName('tr');
+                    let isEnabled = true;
+                    for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[0];
+                        if (td) {
+                            txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().trim() === filter) {
+                                // console.log("一樣")
+                                isEnabled = true;
+                                break;
+                            } else {
+                                // console.log("唔一樣")
+                                isEnabled = false
+                            }
+                        }
+                    }
+                    add_submitBtn.disabled = isEnabled;
+                });
+
+                const edit_username = document.querySelector("#edit_username");
+                const edit_submitBtn = document.getElementById('edit_submitBtn');
+
+                edit_username.addEventListener('input', (event) => {
+                    const filter = (document.querySelector("#edit_username").value).toUpperCase();
+                    const table = document.getElementById('myTable');
+                    const tr = table.getElementsByTagName('tr');
+                    const id = document.querySelector("#edit_user_id").value
+                    let isEnabled = true;
+                    for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[0];
+                        if (td) {
+                            txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().trim() === filter) {
+                                // console.log("一樣")
+                                isEnabled = true;
+                                break;
+                            } else {
+                                // console.log("唔一樣")
+                                isEnabled = false
+                            }
+                        }
+                        
+                    }
+                    if (document.querySelector(`#user${id}`).getElementsByTagName("td")[0].textContent.toUpperCase().trim() === filter){
+                        isEnabled = false
+                    }
+                    edit_submitBtn.disabled = isEnabled;
+                });
+
+            </script>
+        </div>
+
+
+</body>
+
+</html>

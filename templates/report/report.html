@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Frame Theme icon -->
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3-theme-deep-purple.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/basicStyle.css')}}">
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_Frame.js')}}"></script>
+    <!-- fucntion -->
+    <script src="{{url_for('static',filename='/js/sideBarFunc.js')}}"></script>
+    <script src="{{url_for('static',filename='/js/filterFunc.js')}}"></script>
+    <title></title>
+</head>
+
+<body class="w3-light-grey">
+
+    <atomt-frame title="Report" hover="w3-hover-deep-purple"></atomt-frame>
+
+    <div class="main">
+        <div style="overflow-y:auto;">
+            <!-- 列出 報告 -->
+            <div class="w3-container w3-padding w3-white">
+                <p class="w3-xlarge" style="margin:0;">
+                    <!-- onclick="accOpen('reportList')" -->
+                    Reprt List
+                    <!-- <i class="fa fa-caret-down w3-right"></i> -->
+                </p>
+                <div class="w3-hide w3-margin-top w3-show" id="reportList">
+                    <input class="w3-input w3-border w3-padding w3-round " type="text"
+                        placeholder="Search for reports.." id="myInput" onkeyup="filterFunc()">
+                    <div style="overflow-x:auto;">
+                        <table class="w3-table-all w3-round w3-margin-top" id="myTable">
+                            <tr>
+                                <th id="reportId">id</th>
+                                <th id="reportName">Report</th>
+                                <th></th>
+                                <th id="reportAbout">about</th>
+                                <th id="edit">edit</th>
+                                <th id="show">info</th>
+                                <th id="show">Show</th>
+                                <th id="show">download</th>
+                            </tr>
+
+                            {% for report in reports %}
+                            <tr id="report{{ report.id }}">
+                                <th>{{ report.id }}</th>
+                                <td id="{{ report.reportname }}">
+                                    {{ report.reportname }}
+                                </td>
+                                <td>
+                                    {% if report.reportname != "PBL" %}
+                                    <button
+                                        class="w3-circle w3-ripple w3-small w3-border w3-margin-left w3-hover-deep-purple"
+                                        onclick="edit_openDialog('report{{ report.id }}', '{{ report.id }}')">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    {% endif %}
+                                </td>
+                                <td style="overflow-x:auto;">{{ report.reportabout }}</td>
+                                <td>
+                                    {% if report.reportname == "PBL" %}
+                                    <button class="w3-circle w3-ripple w3-small w3-border w3-border-blue w3-text-blue">
+                                        P
+                                    </button>
+                                    {% else %}
+                                    <a href="/atomt/delreport/{{report.reportname}}">
+                                        <button
+                                            class="w3-circle w3-ripple w3-small w3-border w3-border-red w3-text-red w3-hover-red">
+                                            X
+                                        </button>
+                                    </a>
+                                    {% endif%}
+                                </td>
+                                <td>
+                                    <a href="/atomt/report_info/{{ report.id }}"
+                                        class="w3-button w3-padding-small w3-round w3-small w3-theme-d1 w3-hover-deep-purple">
+                                        <b>info >></b>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/atomt/report_show/{{ report.id }}"
+                                        class="w3-button w3-padding-small w3-round w3-small w3-theme-d1 w3-hover-deep-purple">
+                                        <b>GO >></b>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/atomt/report_download/{{ report.id }}"
+                                        class="w3-button w3-padding-small w3-round w3-small w3-theme-d1 w3-hover-deep-purple">
+                                        <b>download</b>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr>
+                                <td onclick="add_openDialog()"></td>
+                                <td onclick="add_openDialog()"></td>
+                                <td onclick="add_openDialog()"></td>
+                                <td onclick="add_openDialog()">
+                                    <b class="w3-text-theme">
+                                        <i class="fa fa-plus-square"></i>
+                                        Add Report
+                                    </b>
+                                </td>
+                                <td onclick="add_openDialog()"></td>
+                                <td onclick="add_openDialog()"></td>
+                                <td onclick="add_openDialog()"></td>
+                                <td>
+                                    <a href="/atomt/DB_download"
+                                    class="w3-button w3-padding-small w3-round w3-small w3-theme-d1 w3-hover-deep-purple">
+                                    <b>download DB</b>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit -->
+            <dialog id="edit_reportDialog" class="w3-container w3-card w3-round-large" close>
+                <form action="/atomt/report" method="post">
+                    <input type="hidden" name="way" value="edit">
+                    <input type="hidden" name="reportid" id="edit_report_id">
+                    <h2>
+                        Modify information
+                        <span class="w3-bar-item w3-margin-left w3-container w3-right w3-round w3-hover-deep-purple"
+                            onclick="edit_closeDialog()">x</span>
+                    </h2>
+                    <p class="w3-margin-top"></p>
+                    <h4>
+                        <label>Report: </label>
+                        <input class="w3-input" type="text" name="reportname" id="edit_reportname">
+                    </h4>
+
+                    <h4>
+                        <label>About: (盡量少於25字)</label>
+                        <input class="w3-input" type="text" name="reportabout" id="edit_reportabout">
+                    </h4>
+
+                    <h4>
+                        <input
+                            class="w3-button w3-medium w3-block w3-round w3-margin-top w3-theme-d1 w3-hover-deep-purple"
+                            type="submit" value="Done" id="edit_submitBtn" disabled>
+                    </h4>
+                </form>
+            </dialog>
+
+            <!-- Add -->
+            <dialog id="add_reportDialog" class="w3-container w3-card w3-round-large" close>
+                <form action="/atomt/report" method="post">
+                    <input type="hidden" name="way" value="add">
+                    <h2>
+                        Add Report_info
+                        <span class="w3-bar-item w3-margin-left w3-container w3-right w3-round w3-hover-deep-purple"
+                            onclick="add_closeDialog()">x</span>
+                    </h2>
+                    <p class="w3-margin-top"></p>
+                    <h4>
+                        <label>Report: </label>
+                        <input class="w3-input" type="text" name="reportname" id="add_reportname">
+                    </h4>
+
+                    <h4>
+                        <label>About: (盡量少於25字)</label>
+                        <input class="w3-input" type="text" name="reportabout">
+                    </h4>
+
+                    <h4>
+                        <input
+                            class="w3-button w3-medium w3-block w3-round w3-margin-top w3-theme-d1 w3-hover-deep-purple"
+                            type="submit" id="add_submitBtn" value="Submit" disabled>
+                    </h4>
+                </form>
+            </dialog>
+
+            <script>
+                edit_reportDialog = document.querySelector("#edit_reportDialog");
+                add_reportDialog = document.querySelector("#add_reportDialog");
+
+                function edit_closeDialog() {
+                    edit_reportDialog.close()
+                }
+
+                function edit_openDialog(id, report_id) {
+                    tr = document.querySelector(`#${id}`)
+                    report_name = tr.getElementsByTagName("td")[0];
+                    report_about = tr.getElementsByTagName("td")[2];
+
+                    document.querySelector("#edit_report_id").value = report_id
+                    document.querySelector("#edit_reportname").value = report_name.innerText.trim()
+                    document.querySelector("#edit_reportabout").value = report_about.textContent
+
+                    edit_reportDialog.showModal()
+                }
+
+                function add_closeDialog() {
+                    add_reportDialog.close()
+                }
+
+                function add_openDialog() {
+                    add_reportDialog.showModal()
+                }
+            </script>
+
+            <script>
+                const add_reportname = document.getElementById('add_reportname');
+                const add_submitBtn = document.getElementById('add_submitBtn');
+
+                add_reportname.addEventListener('input', (event) => {
+                    const filter = add_reportname.value.toUpperCase();
+                    const table = document.getElementById('myTable');
+                    const tr = table.getElementsByTagName('tr');
+                    let isEnabled = true;
+                    for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[0];
+                        if (td) {
+                            txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().trim() === filter) {
+                                // console.log("一樣")
+                                isEnabled = true;
+                                break;
+                            } else {
+                                // console.log("唔一樣")
+                                isEnabled = false
+                            }
+                        }
+                    }
+                    add_submitBtn.disabled = isEnabled;
+                });
+
+                const edit_reportname = document.querySelector("#edit_reportname");
+                const edit_submitBtn = document.getElementById('edit_submitBtn');
+
+                edit_reportname.addEventListener('input', (event) => {
+                    const filter = (document.querySelector("#edit_reportname").value).toUpperCase();
+                    console.log(filter)
+                    const table = document.getElementById('myTable');
+                    const tr = table.getElementsByTagName('tr');
+                    const id = document.querySelector("#edit_report_id").value
+                    let isEnabled = true;
+                    for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[0];
+                        if (td) {
+                            txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().trim() === filter) {
+                                // console.log("一樣")
+                                isEnabled = true;
+                                break;
+                            } else {
+                                // console.log("唔一樣")
+                                isEnabled = false
+                            }
+                        }
+                    }
+                    if (document.querySelector(`#report${id}`).getElementsByTagName("td")[0].textContent.toUpperCase().trim() === filter) {
+                        isEnabled = false
+                    }
+                    edit_submitBtn.disabled = isEnabled;
+                });
+            </script>
+        </div>
+
+</body>
+
+</html>

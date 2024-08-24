@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Frame Theme icon -->
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3-theme-deep-purple.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/basicStyle.css')}}">
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_Frame.js')}}"></script>
+    <!-- fucntion -->
+    <script src="{{url_for('static',filename='/js/sideBarFunc.js')}}"></script>
+    <title></title>
+</head>
+
+<body class="w3-light-grey">
+    <atomt-frame title="ChatBox" hover="w3-hover-deep-purple"></atomt-frame>
+
+    <div class="main">
+
+        <div class="w3-row">
+            <div class="w3-col w3-round w3-right  w3-margin-left" style="width:48px ">
+                <button class="w3-button w3-round w3-right w3-theme-l1 w3-hover-deep-purple" style="width:48px">
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="w3-rest w3-round">
+                <textarea class="w3-input w3-round" rows="1" style="resize:none"></textarea>
+            </div>
+        </div>
+        <script>
+            let textarea = document.querySelector('textarea');
+            textarea.addEventListener('input', (e) => {
+                textarea.style.height = '40.5px';
+                textarea.style.height = e.target.scrollHeight + 'px';
+            });
+        </script>
+    </div>
+</body>
+
+</html>

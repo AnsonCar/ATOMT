@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Frame Theme icon -->
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/w3-theme-deep-purple.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='/css/basicStyle.css')}}">
+    <script type="module" src="{{url_for('static',filename='js/components/ATOMT_Frame.js')}}"></script>
+    <!-- fucntion -->
+    <script src="{{url_for('static',filename='/js/sideBarFunc.js')}}"></script>
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <title></title>
+</head>
+
+<body class="w3-light-grey">
+    <atomt-frame title="Dashboard" hover="w3-hover-deep-purple"></atomt-frame>
+
+    <div class="main">
+        <div class="w3-row-padding">
+            <div class="w3-third">
+                <div class="w3-container w3-padding w3-white w3-center">
+                    <h2 class="w3-text-theme"><b>CPU</b></h2>
+                    <h3 id="CPU">{{pc_info.CPU_usage}} %</h3>
+                </div>
+            </div>
+            <div class="w3-third">
+                <div class="w3-container w3-padding w3-white w3-center">
+                    <h2 class="w3-text-theme"><b>Memory</b></h2>
+                    <h3 id="Memory">{{pc_info.Memory.Memory_usage}} %</h3>
+                </div>
+            </div>
+            <div class="w3-third">
+                <div class="w3-container w3-padding w3-white w3-center">
+                    <h2 class="w3-text-theme"><b>Dick</b></h2>
+                    <h3 id="Dick">{{pc_info.Dick.Disk_usage}} %</h3>
+                </div>
+            </div>
+        </div>
+        <div class="w3-row w3-margin-top">
+            <div class="w3-col w3-rest">
+                <div class="w3-container w3-margin-left w3-margin-right w3-padding w3-white w3-center"
+                    style="height: 500px" id="container"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 定义更新 PC 信息的函数
+        function updatePcInfo() {
+            // 创建 XMLHttpRequest 对象
+            var xhr = new XMLHttpRequest();
+
+            // 定义请求完成时的回调函数
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 解析 JSON 响应数据
+                    var data = JSON.parse(xhr.responseText);
+
+                    // 更新页面上的信息
+                    document.getElementById("CPU").innerHTML = `${data.CPU} %`;
+                    document.getElementById("Memory").innerHTML = `${data.Memory} %`;
+                    // document.getElementById("Dick").innerHTML = `${data.Dick} %`;
+                    setInterval(function () {
+                        let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
+                        thedata.shift();
+                        thedata.push(+(data.CPU));
+                        data2.shift();
+                        data2.push(+(data.Memory));
+                        categories.shift();
+                        categories.push(axisData);
+                        myChart.setOption({
+                            xAxis: {
+                                data: categories
+                            },
+                            series: [
+                                {
+                                    data: thedata
+                                },
+                                {
+                                    data: data2
+                                }
+                            ]
+                        });
+                    }, 1000);
+                }
+            };
+
+            // 发送 POST 请求
+            xhr.open("POST", "/atomt/pc_info", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+        }
+
+        // 定时执行更新 PC 信息函数
+        setInterval(updatePcInfo, 1000);  // 1 秒钟更新一次
+    </script>
+    <script>
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        const categories = (function () {
+            let now = new Date();
+            let res = [];
+            let len = 10;
+            while (len--) {
+                res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
+                now = new Date(+now - 2000);
+            }
+            return res;
+        })();
+        const thedata = (function () {
+            let res = [];
+            let len = 0;
+            while (len < 10) {
+                res.push(0);
+                len++;
+            }
+            return res;
+        })();
+        const data2 = (function () {
+            let res = [];
+            let len = 0;
+            while (len < 10) {
+                res.push(0);
+                len++;
+            }
+            return res;
+        })();
+        option = {
+            title: {
+                text: 'Dynamic Data'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#283b56'
+                    }
+                }
+            },
+            legend: {},
+            toolbox: {
+                show: true,
+                feature: {
+                    dataView: { readOnly: false },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            dataZoom: {
+                show: false,
+                start: 0,
+                end: 100
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                scale: true,
+                name: 'Order',
+                max: 100,
+                min: 0,
+                boundaryGap: [0.2, 0.2]
+            },
+            series: [
+                {
+                    name: 'CPU',
+                    type: 'line',
+                    data: thedata
+                },
+                {
+                    name: 'Memory',
+                    type: 'line',
+                    data: data2
+                }
+            ]
+        };
+        app.count = 11;
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    </script>
+</body>
+
+</html>
